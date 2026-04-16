@@ -1,11 +1,14 @@
 import {Body,
         Controller,
         Get,
+        Module,
         Param,
         Post} from '@nestjs/common';
 
-import {MessageService} from './app.service';
-import {CreateMessageDto} from './dto/create-message.dto';
+import {AppController} from './app.controller';
+import {AppService,
+        MessageService} from './app.service';
+import {CreateMessageDto} from './create-message.dto';
 
 @Controller('messages')
 export class MessageController {
@@ -21,6 +24,18 @@ export class MessageController {
     }
     @Post()
     createMessage(@Body() createMessageDto: CreateMessageDto) {
-        return this.messageService.create(createMessageDto.message);
+        return this.messageService.create(createMessageDto.content);
     }
+
+    @Get(':id')
+    getMessage(@Param('id') id: string) {
+        return this.messageService.findone(id);
+    }
+}
+
+@Module({
+    controllers: [AppController, MessageController],
+    providers: [AppService, MessageService],
+})
+export class AppModule {
 }
