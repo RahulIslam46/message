@@ -1,29 +1,37 @@
+import {Inject,
+        Injectable} from '@nestjs/common';
 import {readFile,
         writeFile} from 'fs/promises';
 
-
+@Injectable()
 export class MessageRepository {
-    async findone(id: string) {
-        // Implementation for finding a message by ID
+    private async readMessages() {
         const data = await readFile('messages.json', 'utf-8');
-        const messages = JSON.parse(data);
-        return messages.find((message) => message.id === id);
+        return JSON.parse(data) as Record < string, {
+            id: string|number;
+            content?: string;
+            message?: string
+        }
+        > ;
+    }
+
+    async findone(id: string) {
+        const messages = await this.readMessages();
+        return messages[id] ?? null;
     }
 
     async findall() {
-        // Implementation for finding all messages
-        const data = await readFile('messages.json', 'utf-8');
-        const messages = JSON.parse(data);
-        return messages;
+        const messages = await this.readMessages();
+        return Object.values(messages);
     }
 
     async create(message: string) {
-        // Implementation for creating a new message
-        const data = await readFile('messages.json', 'utf-8');
-        const messages = JSON.parse(data);
+        const messages = await this.readMessages();
 
         const id = Math.floor(Math.random() * 1000).toString();
-        messages[id] = {id, message};
+        messages[id] = {id, content: message};
         await writeFile('messages.json', JSON.stringify(messages));
+
+        return messages[id];
     }
 }

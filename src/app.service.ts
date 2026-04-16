@@ -1,27 +1,26 @@
+import {Injectable} from '@nestjs/common';
+
 import {MessageRepository} from './app.repository';
 
+@Injectable()
 export class AppService {
     getHello(): string {
         return 'Hello World!';
     }
 }
 
+@Injectable()
 export class MessageService {
-    messageRepository: MessageRepository;
-    constructor() {
-        // Service is creating it's own dependency, which is not ideal for testing
-        // In a real application, you would typically inject this dependency
-        this.messageRepository = new MessageRepository();
-    }
+    constructor(public messageRepo: MessageRepository) {}
 
     async findone(id: string) {
-        return this.messageRepository.findone(id);
+        return this.messageRepo.findone(id);
     }
 
     async findall() {
-        return this.messageRepository.findall();
+        return this.messageRepo.findall();
     }
     async create(message: string) {
-        return this.messageRepository.create(message);
+        return this.messageRepo.create(message);
     }
 }
